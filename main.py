@@ -148,3 +148,7 @@ def decrypt(key,payload):
         M.append(message[::-1])
     return "".join(M)
 
+def checkSignature(key,payload):
+    result = decrypt(key,payload)
+    return all((65 <= ord(c) <= 90) for c in result)
+
