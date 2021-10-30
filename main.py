@@ -96,7 +96,17 @@ def encrypt(key,payload):
 
     block_size = getBlockSize(n)
 
-    M = [(ord(c) - 65) for c in payload]
+    M = []
+    if all([48 <= ord(c) <= 57 for c in payload]):
+        M = [int(payload[i:i+2]) for i in range(0,len(payload),2)]
+    else:
+        for c in payload:
+            value = ord(c)
+
+            if(65 <= value <= 90):
+                M.append(value - 65)
+            else:
+                M.append(value)
 
     blocks = [M[start:start+block_size] for start in range(0,len(M),block_size)]
 
@@ -138,7 +148,10 @@ def decrypt(key,payload):
         i = block_size
         while i > 0:
             c = aux % 100
-            char = chr(c + 65)
+            if(0 <= c <= 25):
+                char = chr(c + 65)
+            else:
+                char = chr(c)
 
             message += char
 
@@ -150,5 +163,4 @@ def decrypt(key,payload):
 
 def checkSignature(key,payload):
     result = decrypt(key,payload)
-    return all((65 <= ord(c) <= 90) for c in result)
-
+    return all((48 <= ord(c) <= 57) or (65 <= ord(c) <= 90) for c in result)
